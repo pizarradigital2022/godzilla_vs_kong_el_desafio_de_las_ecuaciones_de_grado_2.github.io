@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Godzilla vs. King Kong: El Desafío de las Ecuaciones de 2º Grado</title>
+  <link rel="icon" href="./resources/favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #0d1b2a;
+      color: #e0e1dd;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #ff4d6d;
+      text-shadow: 2px 2px 4px #000;
+      margin-bottom: 10px;
+    }
+    .screen {
+      display: none;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #1b263b;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+    }
+    .active-screen {
+      display: block;
+    }
+    /* Pantalla Inicial */
+    .setup-container {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .player-setup {
+      background: #415a77;
+      padding: 20px;
+      border-radius: 10px;
+      width: 40%;
+      min-width: 250px;
+      box-sizing: border-box;
+      border: 2px solid #778da9;
+    }
+    .instructions-box {
+      background: #415a77;
+      border-left: 5px solid #ff4d6d;
+      padding: 15px 20px;
+      margin: 20px auto;
+      max-width: 80%;
+      border-radius: 0 10px 10px 0;
+      text-align: left;
+    }
+    .instructions-box h3 {
+      margin-top: 0;
+      color: #ff4d6d;
+    }
+    .instructions-box ul {
+      margin: 5px 0;
+      padding-left: 20px;
+    }
+    .instructions-box li {
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    input[type="text"], select {
+      width: 80%;
+      padding: 10px;
+      font-size: 1.1em;
+      border: 2px solid #ff4d6d;
+      border-radius: 5px;
+      background: #0d1b2a;
+      color: #fff;
+      outline: none;
+      margin-top: 10px;
+    }
+    /* Pantalla de Juego */
+    .game-layout {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .player-area {
+      width: 45%;
+      min-width: 450px;
+      padding: 15px;
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+    .active-turn {
+      background: rgba(255, 77, 109, 0.2);
+      border: 2px solid #ff4d6d;
+    }
+    .rosco-container {
+      position: relative;
+      width: 440px;
+      height: 440px;
+      margin: 15px auto;
+    }
+    .letter {
+      width: 40px;
+      height: 40px;
+      background-color: #0f3460;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      font-weight: bold;
+      font-size: 0.85em;
+      transition: background-color 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
+    .center-image {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #ff4d6d;
+      background: #0d1b2a;
+    }
+    /* Estados de las preguntas */
+    .waiting-letter { background-color: #0f3460; }
+    .active-letter { background-color: #f39c12 !important; color: black; animation: pulse 1s infinite alternate; }
+    .correct-letter { background-color: #27ae60 !important; }
+    .wrong-letter { background-color: #c0392b !important; }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+
+    .timer-display {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #ff4d6d;
+      margin: 10px 0;
+      background: #0d1b2a;
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 8px;
+    }
+    #global-timer-container {
+      margin-bottom: 15px;
+    }
+    #global-timer {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #ff4d6d;
+      background: #0d1b2a;
+      display: inline-block;
+      padding: 5px 20px;
+      border-radius: 10px;
+    }
+    .control-panel {
+      margin-top: 20px;
+      background: #415a77;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    #current-question {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      min-height: 40px;
+      line-height: 1.5;
+    }
+    #answer-input {
+      padding: 10px;
+      font-size: 1.3em;
+      width: 250px;
+      text-align: center;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+    }
+    /* Botones */
+    button {
+      padding: 12px 25px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      transition: background 0.2s, transform 0.1s;
+      margin: 5px;
+    }
+    button:active { transform: scale(0.98); }
+    .btn-main { background-color: #ff4d6d; color: white; }
+    .btn-main:hover { background-color: #ff758f; }
+    .btn-pass { background-color: #f39c12; color: white; }
+    .btn-pass:hover { background-color: #f1c40f; }
+    .btn-action { background-color: #27ae60; color: white; }
+    .btn-action:hover { background-color: #2ecc71; }
+
+    #feedback {
+      height: 25px;
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .screen-img {
+      width: 400px;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin: 15px auto;
+      border: 2px solid #ff4d6d;
+    }
+    /* Pantalla de Resultados */
+    .results-table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    .results-table th, .results-table td {
+      border: 1px solid #ff4d6d;
+      padding: 12px;
+      font-size: 1.2em;
+    }
+    .results-table th { background-color: #415a77; }
+    #winner-announcement {
+      font-size: 2em;
+      color: #27ae60;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Godzilla vs. King Kong: Rosco de Ecuaciones de 2º Grado</h1>
+
+  <div id="screen-setup" class="screen active-screen">
+    <h2>Configuración de la Batalla de Titanes</h2>
+    <img class="screen-img" src="./resources/imagen_inicial.png" alt="Godzilla y King Kong listos para el duelo matemático">
+    
+    <div class="instructions-box">
+      <h3>Instrucciones de Juego</h3>
+      <ul>
+        <li><strong>El Objetivo:</strong> Resolver correctamente las 20 ecuaciones de segundo grado de tu rosco. ¡Todas poseen soluciones enteras!</li>
+        <li><strong>Cómo responder:</strong> Introduce **una sola de las dos raíces de la ecuación** (el número entero que tú quieras de los dos posibles soluciones).</li>
+        <li><strong>Mecánica de Turnos:</strong> Sigues respondiendo mientras aciertes. Si fallas o pulsas <strong>"Pasapalabra"</strong>, el turno pasará al titán rival. Puedes usar la tecla <em>Enter</em> para enviar.</li>
+        <li><strong>Modos de Tiempo:</strong> Elige entre un cronómetro global compartido o cronómetros individuales por equipo.</li>
+      </ul>
+    </div>
+
+    <div class="setup-container">
+      <div class="player-setup">
+        <h3>Titán 1</h3>
+        <input type="text" id="p1-name" value="Equipo Godzilla">
+      </div>
+      <div class="player-setup">
+        <h3>Titán 2</h3>
+        <input type="text" id="p2-name" value="Equipo King Kong">
+      </div>
+    </div>
+
+    <div style="margin: 20px 0; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+      <div>
+        <label for="game-mode" style="font-size: 1.2em; font-weight: bold; display: block; margin-bottom: 5px;">Modalidad de Tiempo:</label>
+        <select id="game-mode">
+          <option value="shared">Tiempo Compartido (Global)</option>
+          <option value="individual">Tiempo Individual (Por Equipo)</option>
+        </select>
+      </div>
+      <div>
+        <label for="game-duration" style="font-size: 1.2em; font-weight: bold; display: block; margin-bottom: 5px;">Duración:</label>
+        <select id="game-duration">
+          <option value="5">5 Minutos</option>
+          <option value="10">10 Minutos</option>
+          <option value="15">15 Minutos</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-main" style="font-size: 1.4em; padding: 15px 40px;" onclick="initGame()">Comenzar el Choque</button>
+
+    <hr>
+    <p>Autor Original: Joaquín Candañedo. Adaptación: Ecuaciones de Cardano-Vieta.<br><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="./resources/CC_BY_SA.png" alt="Creative Commons Reconocimiento - Compartir Igual"></a></p>  
+
+  </div>
+
+
+  <div id="screen-game" class="screen">
+    <div id="global-timer-container">
+      <div id="global-timer">05:00</div>
+    </div>
+
+    <div class="game-layout">
+      <div id="area-p1" class="player-area">
+        <h3 id="display-name-p1">Equipo Godzilla</h3>
+        <div id="timer-p1-container" style="display: none;">
+          <div id="timer-p1" class="timer-display">05:00</div>
+        </div>
+        <div id="rosco-p1" class="rosco-container">
+          <img class="center-image" src="./resources/imagen_centro_p1.png" alt="Godzilla">
+        </div>
+      </div>
+
+      <div id="area-p2" class="player-area">
+        <h3 id="display-name-p2">Equipo King Kong</h3>
+        <div id="timer-p2-container" style="display: none;">
+          <div id="timer-p2" class="timer-display">05:00</div>
+        </div>
+        <div id="rosco-p2" class="rosco-container">
+          <img class="center-image" src="./resources/imagen_centro_p2.png" alt="King Kong">
+        </div>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <h2 id="turn-indicator" style="color: #f39c12;">Turno de: ...</h2>
+      <div id="current-question">La ecuación aparecerá aquí</div>
+      
+      <div id="action-zone">
+        <input type="text" id="answer-input" autocomplete="off" placeholder="Escribe una de las soluciones">
+        <div style="margin-top: 15px;">
+          <button class="btn-action" id="btn-submit" onclick="processAnswer()">Responder</button>
+          <button class="btn-pass" id="btn-pass" onclick="triggerPasapalabra()">Pasapalabra</button>
+        </div>
+      </div>
+      <div id="feedback"></div>
+    </div>
+  </div>
+
+
+  <div id="screen-results" class="screen">
+    <h2>Fin del Enfrentamiento</h2>
+    <img class="screen-img" src="./resources/imagen_final.png" alt="Fin de la batalla">
+    
+    <div id="winner-announcement">¡Ganador!</div>
+
+    <h3>Estadísticas Finales</h3>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Titán / Concursante</th>
+          <th>Aciertos 👍</th>
+          <th>Errores 👎</th>
+          <th>Pendientes ⏳</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="res-name-p1">Equipo Godzilla</td>
+          <td id="res-ok-p1" style="color: #27ae60;">0</td>
+          <td id="res-ko-p1" style="color: #c0392b;">0</td>
+          <td id="res-pen-p1" style="color: #f39c12;">0</td>
+        </tr>
+        <tr>
+          <td id="res-name-p2">Equipo King Kong</td>
+          <td id="res-ok-p2" style="color: #27ae60;">0</td>
+          <td id="res-ko-p2" style="color: #c0392b;">0</td>
+          <td id="res-pen-p2" style="color: #f39c12;">0</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button class="btn-main" style="margin-top: 20px; font-size: 1.2em;" onclick="restartToSetup()">Volver a Luchar</button>
+  </div>
+
+  <script>
+    const TOTAL_QUESTIONS = 20;
+    let players = {
+      p1: { name: "", score: { correct: 0, wrong: 0 }, pending: [], questions: [], currentIdx: 0, finished: false, timeLeft: 300, outOfTime: false },
+      p2: { name: "", score: { correct: 0, wrong: 0 }, pending: [], questions: [], currentIdx: 0, finished: false, timeLeft: 300, outOfTime: false }
+    };
+    
+    let activePlayerKey = 'p1';
+    let gameTimer = null;
+    let globalTimeLeft = 300;
+    let currentMode = 'shared';
+
+    window.onload = () => {
+      document.getElementById("answer-input").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          processAnswer();
+        }
+      });
+    };
+
+    // Motor de generación usando Cardano-Vieta: x^2 - Sx + P = 0
+    function generateCardanoVietaQuestion(existingEquations) {
+      let attempts = 0;
+      while (attempts < 1000) {
+        // Generamos dos soluciones enteras aleatorias x1 y x2 distintas de cero
+        let x1 = Math.floor(Math.random() * 21) - 10; // Rango -10 a 10
+        let x2 = Math.floor(Math.random() * 21) - 10;
+        
+        if (x1 === 0) x1 = 2;
+        if (x2 === 0) x2 = -3;
+        if (x1 === x2) x2 += 1; // Forzar a que sean distintas para más dinamismo
+
+        let S = x1 + x2;
+        let P = x1 * x2;
+
+        // Construcción de la cadena de texto de la ecuación de forma elegante
+        let bTerm = "";
+        if (S > 0) {
+          bTerm = ` - ${S}x`;
+        } else if (S < 0) {
+          bTerm = ` + ${Math.abs(S)}x`;
+        } // Si S es 0, no se añade término en x
+
+        let cTerm = "";
+        if (P > 0) {
+          cTerm = ` + ${P}`;
+        } else if (P < 0) {
+          cTerm = ` - ${Math.abs(P)}`;
+        } // Si P es 0, no añade término independiente
+
+        let questionText = `x²${bTerm}${cTerm} = 0`;
+
+        // Validamos que no se repita en este rosco
+        if (!existingEquations.includes(questionText)) {
+          existingEquations.push(questionText);
+          return { text: questionText, answers: [x1, x2] };
+        }
+        attempts++;
+      }
+      // Fail-safe por si acaso
+      return { text: "x² - 5x + 6 = 0", answers: [2, 3] };
+    }
+
+    function changeScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+      document.getElementById(screenId).classList.add('active-screen');
+    }
+
+    function initGame() {
+      players.p1.name = document.getElementById("p1-name").value.trim() || "Equipo Godzilla";
+      players.p2.name = document.getElementById("p2-name").value.trim() || "Equipo King Kong";
+      
+      currentMode = document.getElementById("game-mode").value;
+      let selectedSeconds = parseInt(document.getElementById("game-duration").value) * 60;
+      
+      globalTimeLeft = selectedSeconds;
+      
+      ['p1', 'p2'].forEach(pKey => {
+        players[pKey].score = { correct: 0, wrong: 0 };
+        players[pKey].pending = Array.from({length: TOTAL_QUESTIONS}, (_, i) => i + 1);
+        players[pKey].currentIdx = 0;
+        players[pKey].finished = false;
+        players[pKey].outOfTime = false;
+        players[pKey].timeLeft = selectedSeconds;
+        players[pKey].questions = [];
+        
+        let existingEquations = [];
+        for(let i=0; i < TOTAL_QUESTIONS; i++) {
+          players[pKey].questions.push(generateCardanoVietaQuestion(existingEquations));
+        }
+      });
+
+      document.getElementById("display-name-p1").innerText = players.p1.name;
+      document.getElementById("display-name-p2").innerText = players.p2.name;
+
+      if (currentMode === 'shared') {
+        document.getElementById("global-timer-container").style.display = "block";
+        document.getElementById("timer-p1-container").style.display = "none";
+        document.getElementById("timer-p2-container").style.display = "none";
+      } else {
+        document.getElementById("global-timer-container").style.display = "none";
+        document.getElementById("timer-p1-container").style.display = "block";
+        document.getElementById("timer-p2-container").style.display = "block";
+      }
+
+      renderRoscoCircle('rosco-p1', 'p1');
+      renderRoscoCircle('rosco-p2', 'p2');
+
+      activePlayerKey = 'p1';
+      updateAllTimersDisplay();
+      
+      clearInterval(gameTimer);
+      gameTimer = setInterval(countdownEngine, 1000);
+      
+      changeScreen('screen-game');
+      refreshTurn();
+    }
+
+    function renderRoscoCircle(containerId, playerKey) {
+      const container = document.getElementById(containerId);
+      const centerImgStr = container.querySelector('.center-image').outerHTML;
+      container.innerHTML = centerImgStr;
+
+      const radius = 175;
+      const centerX = 220;
+      const centerY = 220;
+
+      for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+        const angle = (2 * Math.PI / TOTAL_QUESTIONS) * i;
+        const x = centerX + radius * Math.sin(angle);
+        const y = centerY - radius * Math.cos(angle);
+        
+        const div = document.createElement("div");
+        div.className = "letter waiting-letter";
+        div.innerText = `${i + 1}ª`;
+        div.style.left = `${x - 20}px`;
+        div.style.top = `${y - 20}px`;
+        div.id = `node-${playerKey}-${i + 1}`;
+        container.appendChild(div);
+      }
+    }
+
+    function checkGameEndConditions() {
+      if (players.p1.finished && players.p2.finished) {
+        return true;
+      }
+
+      if (currentMode === 'shared') {
+        if (globalTimeLeft <= 0) return true;
+      } else {
+        if (players.p1.score.correct === TOTAL_QUESTIONS || players.p2.score.correct === TOTAL_QUESTIONS) {
+          return true;
+        }
+        if (players.p1.outOfTime && players.p2.outOfTime) {
+          return true;
+        }
+        if (players.p1.outOfTime && players.p2.finished) return true;
+        if (players.p2.outOfTime && players.p1.finished) return true;
+      }
+      return false;
+    }
+
+    function refreshTurn() {
+      document.querySelectorAll('.letter').forEach(l => l.classList.remove('active-letter'));
+      document.getElementById('area-p1').classList.remove('active-turn');
+      document.getElementById('area-p2').classList.remove('active-turn');
+      document.getElementById("feedback").innerText = "";
+
+      if (checkGameEndConditions()) {
+        endGame();
+        return;
+      }
+
+      let pData = players[activePlayerKey];
+
+      if (pData.finished || (currentMode === 'individual' && pData.outOfTime)) {
+        forceSwitchTurn();
+        return;
+      }
+
+      document.getElementById(`area-${activePlayerKey}`).classList.add('active-turn');
+      document.getElementById("turn-indicator").innerText = `Turno de: ${pData.name}`;
+
+      let currentNum = pData.pending[pData.currentIdx];
+      let activeNode = document.getElementById(`node-${activePlayerKey}-${currentNum}`);
+      if (activeNode) activeNode.classList.add('active-letter');
+
+      document.getElementById("current-question").innerHTML = `Ecuación nº ${currentNum}:<br><strong style="font-size:1.4em;">${pData.questions[currentNum - 1].text}</strong>`;
+      document.getElementById("answer-input").value = "";
+      document.getElementById("answer-input").focus();
+    }
+
+    function forceSwitchTurn() {
+      activePlayerKey = (activePlayerKey === 'p1') ? 'p2' : 'p1';
+      let pData = players[activePlayerKey];
+      if (pData.finished || (currentMode === 'individual' && pData.outOfTime)) {
+        if (checkGameEndConditions() || 
+           (players.p1.finished || players.p1.outOfTime) && (players.p2.finished || players.p2.outOfTime)) {
+          endGame();
+          return;
+        }
+      }
+      refreshTurn();
+    }
+
+    function triggerPasapalabra() {
+      let pData = players[activePlayerKey];
+      if (pData.pending.length > 1) {
+        pData.currentIdx = (pData.currentIdx + 1) % pData.pending.length;
+      }
+      
+      let opponentKey = (activePlayerKey === 'p1') ? 'p2' : 'p1';
+      let oppData = players[opponentKey];
+      if (!oppData.finished && !(currentMode === 'individual' && oppData.outOfTime)) {
+        activePlayerKey = opponentKey;
+      }
+      refreshTurn();
+    }
+
+    function processAnswer() {
+      let pData = players[activePlayerKey];
+      if (pData.pending.length === 0 || pData.finished || (currentMode === 'individual' && pData.outOfTime)) return;
+
+      let currentNum = pData.pending[pData.currentIdx];
+      let inputVal = document.getElementById("answer-input").value.trim();
+      
+      if (inputVal === "") return;
+
+      let numericAnswer = parseInt(inputVal);
+      let validAnswers = pData.questions[currentNum - 1].answers;
+      let targetNode = document.getElementById(`node-${activePlayerKey}-${currentNum}`);
+
+      // Comprobamos si el jugador ha puesto alguna de las dos soluciones enteras válidas
+      if (!isNaN(numericAnswer) && validAnswers.includes(numericAnswer)) {
+        targetNode.className = "letter correct-letter";
+        pData.score.correct++;
+        pData.pending.splice(pData.currentIdx, 1);
+        
+        if (pData.pending.length === 0) {
+          pData.finished = true;
+        } else if (pData.currentIdx >= pData.pending.length) {
+          pData.currentIdx = 0;
+        }
+        refreshTurn();
+      } else {
+        targetNode.className = "letter wrong-letter";
+        pData.score.wrong++;
+        document.getElementById("feedback").innerText = `Incorrecto. Las soluciones eran: x = ${validAnswers[0]} y x = ${validAnswers[1]}`;
+        
+        pData.pending.splice(pData.currentIdx, 1);
+        if (pData.pending.length === 0) {
+          pData.finished = true;
+        } else if (pData.currentIdx >= pData.pending.length) {
+          pData.currentIdx = 0;
+        }
+
+        document.getElementById("answer-input").disabled = true;
+        document.getElementById("btn-submit").disabled = true;
+        document.getElementById("btn-pass").disabled = true;
+
+        setTimeout(() => {
+          document.getElementById("answer-input").disabled = false;
+          document.getElementById("btn-submit").disabled = false;
+          document.getElementById("btn-pass").disabled = false;
+          
+          let opponentKey = (activePlayerKey === 'p1') ? 'p2' : 'p1';
+          let oppData = players[opponentKey];
+          if (!oppData.finished && !(currentMode === 'individual' && oppData.outOfTime)) {
+            activePlayerKey = opponentKey;
+          }
+          refreshTurn();
+        }, 2000); // 2 segundos para dar tiempo a leer las dos raíces correctas
+      }
+    }
+
+    function countdownEngine() {
+      if (currentMode === 'shared') {
+        globalTimeLeft--;
+        updateAllTimersDisplay();
+        if (globalTimeLeft <= 0) {
+          clearInterval(gameTimer);
+          endGame();
+        }
+      } else {
+        let pData = players[activePlayerKey];
+        if (!pData.finished && !pData.outOfTime) {
+          pData.timeLeft--;
+          updateAllTimersDisplay();
+          
+          if (pData.timeLeft <= 0) {
+            pData.outOfTime = true;
+            forceSwitchTurn();
+          }
+        }
+      }
+    }
+
+    function updateAllTimersDisplay() {
+      if (currentMode === 'shared') {
+        let min = Math.floor(globalTimeLeft / 60).toString().padStart(2, '0');
+        let sec = (globalTimeLeft % 60).toString().padStart(2, '0');
+        document.getElementById("global-timer").innerText = `${min}:${sec}`;
+      } else {
+        ['p1', 'p2'].forEach(pKey => {
+          let t = players[pKey].timeLeft;
+          if (t < 0) t = 0;
+          let min = Math.floor(t / 60).toString().padStart(2, '0');
+          let sec = (t % 60).toString().padStart(2, '0');
+          document.getElementById(`timer-${pKey}`).innerText = `${min}:${sec}`;
+        });
+      }
+    }
+
+    function endGame() {
+      clearInterval(gameTimer);
+      changeScreen('screen-results');
+
+      document.getElementById("res-name-p1").innerText = players.p1.name;
+      document.getElementById("res-ok-p1").innerText = players.p1.score.correct;
+      document.getElementById("res-ko-p1").innerText = players.p1.score.wrong;
+      document.getElementById("res-pen-p1").innerText = players.p1.pending.length;
+
+      document.getElementById("res-name-p2").innerText = players.p2.name;
+      document.getElementById("res-ok-p2").innerText = players.p2.score.correct;
+      document.getElementById("res-ko-p2").innerText = players.p2.score.wrong;
+      document.getElementById("res-pen-p2").innerText = players.p2.pending.length;
+
+      let winnerText = "";
+      
+      if (currentMode === 'individual' && players.p1.score.correct === TOTAL_QUESTIONS && players.p2.score.correct !== TOTAL_QUESTIONS) {
+        winnerText = `🏆 ¡Victoria Destructiva para ${players.p1.name} por completar el Rosco de Ecuaciones Perfecto! 🦖`;
+      } else if (currentMode === 'individual' && players.p2.score.correct === TOTAL_QUESTIONS && players.p1.score.correct !== TOTAL_QUESTIONS) {
+        winnerText = `🏆 ¡Victoria Aplastante para ${players.p2.name} por completar el Rosco de Ecuaciones Perfecto! 🦍`;
+      } else {
+        if (players.p1.score.correct > players.p2.score.correct) {
+          winnerText = `🏆 ¡El Rey de los Monstruos es ${players.p1.name}! 🦖`;
+        } else if (players.p2.score.correct > players.p1.score.correct) {
+          winnerText = `🏆 ¡El Alfa de la Isla es ${players.p2.name}! 🦍`;
+        } else {
+          if (players.p1.score.wrong < players.p2.score.wrong) {
+            winnerText = `🏆 ¡Victoria para ${players.p1.name} (por mayor precisión en sus cálculos)! 🦖`;
+          } else if (players.p2.score.wrong < players.p1.score.wrong) {
+            winnerText = `🏆 ¡Victoria para ${players.p2.name} (por mayor precisión en sus cálculos)! 🦍`;
+          } else {
+            winnerText = "¡Empate en la cumbre! Ambos Titanes colapsan el marcador. 🤝";
+          }
+        }
+      }
+      document.getElementById("winner-announcement").innerText = winnerText;
+    }
+
+    function restartToSetup() {
+      changeScreen('screen-setup');
+    }
+  </script>
+</body>
+</html>
