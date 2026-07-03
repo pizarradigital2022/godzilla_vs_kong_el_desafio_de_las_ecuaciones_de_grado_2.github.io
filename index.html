@@ -127,6 +127,7 @@
       border-radius: 50%;
       border: 3px solid #ff4d6d;
       background: #0d1b2a;
+      object-fit: cover;
     }
     /* Estados de las preguntas */
     .waiting-letter { background-color: #0f3460; }
@@ -169,9 +170,21 @@
     }
     #current-question {
       font-size: 1.5em;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       min-height: 40px;
       line-height: 1.5;
+    }
+    /* Indicador dinámico exterior de lo que se solicita */
+    #target-instruction {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #f1c40f;
+      background: #0d1b2a;
+      padding: 6px 15px;
+      border-radius: 5px;
+      display: inline-block;
+      margin-bottom: 15px;
+      border: 1px dashed #f39c12;
     }
     #answer-input {
       padding: 10px;
@@ -181,6 +194,17 @@
       border-radius: 5px;
       border: none;
       outline: none;
+    }
+    /* Ajuste para que las imágenes panorámicas no se recorten */
+    .screen-img {
+      width: 100%;
+      max-width: 700px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 10px;
+      margin: 15px auto;
+      border: 2px solid #ff4d6d;
+      display: block;
     }
     /* Botones */
     button {
@@ -206,17 +230,6 @@
       font-size: 1.2em;
       font-weight: bold;
       margin-top: 10px;
-    }
-  /* Ajuste para que las imágenes panorámicas no se recorten */
-    .screen-img {
-      width: 100%;
-      max-width: 700px; /* Ancho máximo recomendado para que luzca bien en pantallas grandes */
-      height: auto;     /* Permite que la altura se adapte a la proporción original */
-      object-fit: contain; /* Garantiza que se muestre la imagen completa sin recortes */
-      border-radius: 10px;
-      margin: 15px auto;
-      border: 2px solid #ff4d6d;
-      display: block;   /* Asegura un correcto centrado con el margin: auto */
     }
     /* Pantalla de Resultados */
     .results-table {
@@ -250,7 +263,7 @@
       <h3>Instrucciones de Juego</h3>
       <ul>
         <li><strong>El Objetivo:</strong> Resolver correctamente las 20 ecuaciones de segundo grado de tu rosco. ¡Todas poseen soluciones enteras!</li>
-        <li><strong>Cómo responder:</strong> Introduce **una sola de las dos raíces de la ecuación** (el número entero que tú quieras de los dos posibles soluciones).</li>
+        <li><strong>Cómo responder:</strong> Presta mucha atención al indicador amarillo. Te pedirá explícitamente introducir **la mayor** o **la menor** de las dos soluciones de la ecuación.</li>
         <li><strong>Mecánica de Turnos:</strong> Sigues respondiendo mientras aciertes. Si fallas o pulsas <strong>"Pasapalabra"</strong>, el turno pasará al titán rival. Puedes usar la tecla <em>Enter</em> para enviar.</li>
         <li><strong>Modos de Tiempo:</strong> Elige entre un cronómetro global compartido o cronómetros individuales por equipo.</li>
       </ul>
@@ -288,7 +301,7 @@
     <button class="btn-main" style="font-size: 1.4em; padding: 15px 40px;" onclick="initGame()">Comenzar el Choque</button>
 
     <hr>
-    <p>Autor Original: Joaquín Candañedo. Adaptación: Ecuaciones de Cardano-Vieta.<br><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="./resources/CC_BY_SA.png" alt="Creative Commons Reconocimiento - Compartir Igual"></a></p>  
+    <p>Autor Original: Joaquín Candañedo. Adaptación: Ecuaciones de Cardano-Vieta y Selección de Raíz Mín/Máx.<br><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="./resources/CC_BY_SA.png" alt="Creative Commons Reconocimiento - Compartir Igual"></a></p>  
 
   </div>
 
@@ -324,8 +337,12 @@
       <h2 id="turn-indicator" style="color: #f39c12;">Turno de: ...</h2>
       <div id="current-question">La ecuación aparecerá aquí</div>
       
+      <div>
+        <div id="target-instruction">Cargando requerimiento...</div>
+      </div>
+      
       <div id="action-zone">
-        <input type="text" id="answer-input" autocomplete="off" placeholder="Escribe una de las soluciones">
+        <input type="text" id="answer-input" autocomplete="off" placeholder="Escribe el número entero">
         <div style="margin-top: 15px;">
           <button class="btn-action" id="btn-submit" onclick="processAnswer()">Responder</button>
           <button class="btn-pass" id="btn-pass" onclick="triggerPasapalabra()">Pasapalabra</button>
@@ -391,47 +408,53 @@
       });
     };
 
-    // Motor de generación usando Cardano-Vieta: x^2 - Sx + P = 0
+    // Motor de generación usando Cardano-Vieta con discriminación de objetivo (mayor o menor)
     function generateCardanoVietaQuestion(existingEquations) {
       let attempts = 0;
       while (attempts < 1000) {
-        // Generamos dos soluciones enteras aleatorias x1 y x2 distintas de cero
         let x1 = Math.floor(Math.random() * 21) - 10; // Rango -10 a 10
         let x2 = Math.floor(Math.random() * 21) - 10;
         
         if (x1 === 0) x1 = 2;
         if (x2 === 0) x2 = -3;
-        if (x1 === x2) x2 += 1; // Forzar a que sean distintas para más dinamismo
+        if (x1 === x2) x2 += 1; 
 
         let S = x1 + x2;
         let P = x1 * x2;
 
-        // Construcción de la cadena de texto de la ecuación de forma elegante
         let bTerm = "";
         if (S > 0) {
           bTerm = ` - ${S}x`;
         } else if (S < 0) {
           bTerm = ` + ${Math.abs(S)}x`;
-        } // Si S es 0, no se añade término en x
+        }
 
         let cTerm = "";
         if (P > 0) {
           cTerm = ` + ${P}`;
         } else if (P < 0) {
           cTerm = ` - ${Math.abs(P)}`;
-        } // Si P es 0, no añade término independiente
+        }
 
         let questionText = `x²${bTerm}${cTerm} = 0`;
 
-        // Validamos que no se repita en este rosco
         if (!existingEquations.includes(questionText)) {
           existingEquations.push(questionText);
-          return { text: questionText, answers: [x1, x2] };
+          
+          // Determinamos de forma aleatoria cuál de las dos raíces se va a exigir obligatoriamente
+          let requireMax = Math.random() < 0.5; 
+          let correctValue = requireMax ? Math.max(x1, x2) : Math.min(x1, x2);
+
+          return { 
+            text: questionText, 
+            allAnswers: [x1, x2],
+            targetAnswer: correctValue,
+            targetType: requireMax ? "la MAYOR" : "la MENOR"
+          };
         }
         attempts++;
       }
-      // Fail-safe por si acaso
-      return { text: "x² - 5x + 6 = 0", answers: [2, 3] };
+      return { text: "x² - 5x + 6 = 0", allAnswers: [2, 3], targetAnswer: 3, targetType: "la MAYOR" };
     }
 
     function changeScreen(screenId) {
@@ -514,19 +537,12 @@
     }
 
     function checkGameEndConditions() {
-      if (players.p1.finished && players.p2.finished) {
-        return true;
-      }
-
+      if (players.p1.finished && players.p2.finished) return true;
       if (currentMode === 'shared') {
         if (globalTimeLeft <= 0) return true;
       } else {
-        if (players.p1.score.correct === TOTAL_QUESTIONS || players.p2.score.correct === TOTAL_QUESTIONS) {
-          return true;
-        }
-        if (players.p1.outOfTime && players.p2.outOfTime) {
-          return true;
-        }
+        if (players.p1.score.correct === TOTAL_QUESTIONS || players.p2.score.correct === TOTAL_QUESTIONS) return true;
+        if (players.p1.outOfTime && players.p2.outOfTime) return true;
         if (players.p1.outOfTime && players.p2.finished) return true;
         if (players.p2.outOfTime && players.p1.finished) return true;
       }
@@ -558,7 +574,14 @@
       let activeNode = document.getElementById(`node-${activePlayerKey}-${currentNum}`);
       if (activeNode) activeNode.classList.add('active-letter');
 
-      document.getElementById("current-question").innerHTML = `Ecuación nº ${currentNum}:<br><strong style="font-size:1.4em;">${pData.questions[currentNum - 1].text}</strong>`;
+      let currentQuestionObj = pData.questions[currentNum - 1];
+      
+      // Renderizar ecuación
+      document.getElementById("current-question").innerHTML = `Ecuación nº ${currentNum}:<br><strong style="font-size:1.4em;">${currentQuestionObj.text}</strong>`;
+      
+      // NUEVO: Modificar el contenedor de texto exterior con la instrucción específica
+      document.getElementById("target-instruction").innerText = `Introduce obligatoriamente ${currentQuestionObj.targetType} solución`;
+
       document.getElementById("answer-input").value = "";
       document.getElementById("answer-input").focus();
     }
@@ -600,11 +623,11 @@
       if (inputVal === "") return;
 
       let numericAnswer = parseInt(inputVal);
-      let validAnswers = pData.questions[currentNum - 1].answers;
+      let questionObj = pData.questions[currentNum - 1];
       let targetNode = document.getElementById(`node-${activePlayerKey}-${currentNum}`);
 
-      // Comprobamos si el jugador ha puesto alguna de las dos soluciones enteras válidas
-      if (!isNaN(numericAnswer) && validAnswers.includes(numericAnswer)) {
+      // Validación estricta del objetivo (Mayor o menor valor esperado)
+      if (!isNaN(numericAnswer) && numericAnswer === questionObj.targetAnswer) {
         targetNode.className = "letter correct-letter";
         pData.score.correct++;
         pData.pending.splice(pData.currentIdx, 1);
@@ -618,7 +641,10 @@
       } else {
         targetNode.className = "letter wrong-letter";
         pData.score.wrong++;
-        document.getElementById("feedback").innerText = `Incorrecto. Las soluciones eran: x = ${validAnswers[0]} y x = ${validAnswers[1]}`;
+        
+        let r1 = questionObj.allAnswers[0];
+        let r2 = questionObj.allAnswers[1];
+        document.getElementById("feedback").innerText = `Incorrecto. Las raíces son ${r1} y ${r2}. Se pedía ${questionObj.targetType} (${questionObj.targetAnswer}).`;
         
         pData.pending.splice(pData.currentIdx, 1);
         if (pData.pending.length === 0) {
@@ -642,7 +668,7 @@
             activePlayerKey = opponentKey;
           }
           refreshTurn();
-        }, 2000); // 2 segundos para dar tiempo a leer las dos raíces correctas
+        }, 3000); // 3 segundos para asimilar la corrección analítica de raíces
       }
     }
 
@@ -701,9 +727,9 @@
       let winnerText = "";
       
       if (currentMode === 'individual' && players.p1.score.correct === TOTAL_QUESTIONS && players.p2.score.correct !== TOTAL_QUESTIONS) {
-        winnerText = `🏆 ¡Victoria Destructiva para ${players.p1.name} por completar el Rosco de Ecuaciones Perfecto! 🦖`;
+        winnerText = `🏆 ¡Victoria Destructiva para ${players.p1.name} por completar el Rosco Perfecto! 🦖`;
       } else if (currentMode === 'individual' && players.p2.score.correct === TOTAL_QUESTIONS && players.p1.score.correct !== TOTAL_QUESTIONS) {
-        winnerText = `🏆 ¡Victoria Aplastante para ${players.p2.name} por completar el Rosco de Ecuaciones Perfecto! 🦍`;
+        winnerText = `🏆 ¡Victoria Aplastante para ${players.p2.name} por completar el Rosco Perfecto! 🦍`;
       } else {
         if (players.p1.score.correct > players.p2.score.correct) {
           winnerText = `🏆 ¡El Rey de los Monstruos es ${players.p1.name}! 🦖`;
@@ -711,9 +737,9 @@
           winnerText = `🏆 ¡El Alfa de la Isla es ${players.p2.name}! 🦍`;
         } else {
           if (players.p1.score.wrong < players.p2.score.wrong) {
-            winnerText = `🏆 ¡Victoria para ${players.p1.name} (por mayor precisión en sus cálculos)! 🦖`;
+            winnerText = `🏆 ¡Victoria para ${players.p1.name} (por mayor precisión en cálculo)! 🦖`;
           } else if (players.p2.score.wrong < players.p1.score.wrong) {
-            winnerText = `🏆 ¡Victoria para ${players.p2.name} (por mayor precisión en sus cálculos)! 🦍`;
+            winnerText = `🏆 ¡Victoria para ${players.p2.name} (por mayor precisión en cálculo)! 🦍`;
           } else {
             winnerText = "¡Empate en la cumbre! Ambos Titanes colapsan el marcador. 🤝";
           }
