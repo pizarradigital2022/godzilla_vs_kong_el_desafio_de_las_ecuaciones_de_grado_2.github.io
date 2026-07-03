@@ -207,13 +207,16 @@
       font-weight: bold;
       margin-top: 10px;
     }
+  /* Ajuste para que las imágenes panorámicas no se recorten */
     .screen-img {
-      width: 400px;
-      height: 400px;
-      object-fit: cover;
+      width: 100%;
+      max-width: 700px; /* Ancho máximo recomendado para que luzca bien en pantallas grandes */
+      height: auto;     /* Permite que la altura se adapte a la proporción original */
+      object-fit: contain; /* Garantiza que se muestre la imagen completa sin recortes */
       border-radius: 10px;
       margin: 15px auto;
       border: 2px solid #ff4d6d;
+      display: block;   /* Asegura un correcto centrado con el margin: auto */
     }
     /* Pantalla de Resultados */
     .results-table {
