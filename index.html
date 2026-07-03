@@ -5,107 +5,162 @@
   <title>Godzilla vs. King Kong: El Desafío de las Ecuaciones de 2º Grado</title>
   <link rel="icon" href="./resources/favicon.ico" type="image/x-icon">
   <style>
+    /* Estilos globales inspirados en la naturaleza y los titanes */
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      background-color: #0d1b2a;
-      color: #e0e1dd;
+      background: linear-gradient(135deg, #0a1f1d 0%, #07162c 50%, #132712 100%);
+      color: #f0f3f5;
       margin: 0;
       padding: 20px;
+      background-attachment: fixed;
     }
+    
     h1 {
-      color: #ff4d6d;
-      text-shadow: 2px 2px 4px #000;
-      margin-bottom: 10px;
+      color: #26d0ce;
+      text-shadow: 3px 3px 6px #000, 0 0 15px rgba(38, 208, 206, 0.6);
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      font-weight: 800;
     }
+
     .screen {
       display: none;
       max-width: 1200px;
       margin: 0 auto;
-      background: #1b263b;
+      background: rgba(18, 30, 49, 0.85);
+      backdrop-filter: blur(8px);
       padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      border: 2px solid #2d4a68;
     }
+    
     .active-screen {
       display: block;
     }
-    /* Pantalla Inicial */
+
+    /* Pantalla Inicial y Configuración */
     .setup-container {
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
-      margin: 20px 0;
+      margin: 25px 0;
     }
+
+    /* Estilo específico para el Titán del Océano */
+    .player-setup.godzilla-theme {
+      background: linear-gradient(145deg, #0b2545, #134074);
+      border: 3px solid #00b4d8;
+      box-shadow: 0 0 15px rgba(0, 180, 216, 0.4);
+    }
+
+    /* Estilo específico para el Titán de la Jungla */
+    .player-setup.kong-theme {
+      background: linear-gradient(145deg, #1b4332, #2d6a4f);
+      border: 3px solid #70e000;
+      box-shadow: 0 0 15px rgba(112, 224, 0, 0.4);
+    }
+
     .player-setup {
-      background: #415a77;
-      padding: 20px;
-      border-radius: 10px;
-      width: 40%;
-      min-width: 250px;
+      padding: 25px;
+      border-radius: 15px;
+      width: 42%;
+      min-width: 280px;
       box-sizing: border-box;
-      border: 2px solid #778da9;
+      color: #ffffff;
     }
+
+    .player-setup h3 {
+      margin-top: 0;
+      font-size: 1.5em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    }
+
     .instructions-box {
-      background: #415a77;
-      border-left: 5px solid #ff4d6d;
-      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.07);
+      border-left: 6px solid #26d0ce;
+      padding: 20px;
       margin: 20px auto;
-      max-width: 80%;
-      border-radius: 0 10px 10px 0;
+      max-width: 85%;
+      border-radius: 4px 15px 15px 4px;
       text-align: left;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     }
+
     .instructions-box h3 {
       margin-top: 0;
-      color: #ff4d6d;
+      color: #26d0ce;
+      font-size: 1.3em;
     }
-    .instructions-box ul {
-      margin: 5px 0;
-      padding-left: 20px;
-    }
+
     .instructions-box li {
       margin-bottom: 8px;
-      line-height: 1.4;
+      line-height: 1.5;
     }
+
     input[type="text"], select {
-      width: 80%;
-      padding: 10px;
+      width: 85%;
+      padding: 12px;
       font-size: 1.1em;
-      border: 2px solid #ff4d6d;
-      border-radius: 5px;
-      background: #0d1b2a;
+      border: 2px solid #26d0ce;
+      border-radius: 8px;
+      background: #09111e;
       color: #fff;
       outline: none;
       margin-top: 10px;
+      transition: all 0.3s;
     }
-    /* Pantalla de Juego */
+
+    input[type="text"]:focus, select:focus {
+      box-shadow: 0 0 10px rgba(38, 208, 206, 0.8);
+      border-color: #00b4d8;
+    }
+
+    /* Pantalla de Juego y Áreas de los Titanes */
     .game-layout {
       display: flex;
       justify-content: space-around;
       align-items: center;
       flex-wrap: wrap;
     }
+
     .player-area {
-      width: 45%;
+      width: 46%;
       min-width: 450px;
-      padding: 15px;
-      border-radius: 10px;
-      transition: background 0.3s;
+      padding: 20px;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 2px solid transparent;
+      transition: all 0.4s ease;
     }
-    .active-turn {
-      background: rgba(255, 77, 109, 0.2);
-      border: 2px solid #ff4d6d;
+
+    /* Efecto activo: Iluminación de Océano o Jungla según el turno */
+    #area-p1.active-turn {
+      background: rgba(0, 180, 216, 0.15);
+      border: 2px solid #00b4d8;
+      box-shadow: 0 0 25px rgba(0, 180, 216, 0.3);
     }
+
+    #area-p2.active-turn {
+      background: rgba(112, 224, 0, 0.12);
+      border: 2px solid #70e000;
+      box-shadow: 0 0 25px rgba(112, 224, 0, 0.3);
+    }
+
+    #area-p1 h3 { color: #90e0ef; font-size: 1.6em; text-shadow: 0 0 8px rgba(0,180,216,0.5); }
+    #area-p2 h3 { color: #9ef01a; font-size: 1.6em; text-shadow: 0 0 8px rgba(112,224,0,0.5); }
+
     .rosco-container {
       position: relative;
       width: 440px;
       height: 440px;
       margin: 15px auto;
     }
+
     .letter {
-      width: 40px;
-      height: 40px;
-      background-color: #0f3460;
+      width: 42px;
+      height: 42px;
       color: white;
       border-radius: 50%;
       display: flex;
@@ -113,183 +168,221 @@
       justify-content: center;
       position: absolute;
       font-weight: bold;
-      font-size: 0.85em;
-      transition: background-color 0.3s;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      font-size: 0.9em;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.5);
     }
+
+    /* Nodos base adaptados a sus respectivos entornos */
+    #rosco-p1 .letter.waiting-letter {
+      background: radial-gradient(circle, #03254c, #001233);
+      border: 2px solid #00b4d8;
+    }
+    #rosco-p2 .letter.waiting-letter {
+      background: radial-gradient(circle, #132a13, #061506);
+      border: 2px solid #70e000;
+    }
+
     .center-image {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 120px;
-      height: 120px;
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
-      border: 3px solid #ff4d6d;
-      background: #0d1b2a;
+      background: #050b14;
       object-fit: cover;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
     }
-    /* Estados de las preguntas */
-    .waiting-letter { background-color: #0f3460; }
-    .active-letter { background-color: #f39c12 !important; color: black; animation: pulse 1s infinite alternate; }
-    .correct-letter { background-color: #27ae60 !important; }
-    .wrong-letter { background-color: #c0392b !important; }
+    
+    #rosco-p1 .center-image { border: 4px solid #00b4d8; }
+    #rosco-p2 .center-image { border: 4px solid #70e000; }
+
+    /* Estados dinámicos de los Roscos */
+    .active-letter { 
+      background: #ffb703 !important; 
+      color: #000 !important; 
+      border-color: #fff !important;
+      animation: pulse 0.8s infinite alternate; 
+      box-shadow: 0 0 15px #ffb703 !important;
+    }
+    .correct-letter { background: #2b9348 !important; border-color: #55a630 !important; color: white; box-shadow: 0 0 10px #2b9348; }
+    .wrong-letter { background: #9b2226 !important; border-color: #ae2012 !important; color: white; box-shadow: 0 0 10px #9b2226; }
 
     @keyframes pulse {
       from { transform: scale(1); }
-      to { transform: scale(1.1); }
+      to { transform: scale(1.15); }
     }
 
-    .timer-display {
-      font-size: 1.8em;
+    /* Timers y Paneles de Control de la Arena */
+    .timer-display, #global-timer {
+      font-family: 'Courier New', Courier, monospace;
       font-weight: bold;
-      color: #ff4d6d;
-      margin: 10px 0;
-      background: #0d1b2a;
+      color: #26d0ce;
+      background: #050c16;
+      border: 2px solid #1a3a5f;
       display: inline-block;
-      padding: 5px 15px;
-      border-radius: 8px;
-    }
-    #global-timer-container {
-      margin-bottom: 15px;
-    }
-    #global-timer {
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #ff4d6d;
-      background: #0d1b2a;
-      display: inline-block;
-      padding: 5px 20px;
+      padding: 6px 20px;
       border-radius: 10px;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.8);
     }
+    .timer-display { font-size: 1.6em; margin: 10px 0; }
+    #global-timer { font-size: 2.6em; color: #ffb703; border-color: #ffb703; text-shadow: 0 0 10px rgba(255,183,3,0.4); }
+    
+    #global-timer-container { margin-bottom: 20px; }
+
     .control-panel {
-      margin-top: 20px;
-      background: #415a77;
-      padding: 20px;
-      border-radius: 10px;
+      margin-top: 25px;
+      background: linear-gradient(180deg, #162235, #0f1826);
+      padding: 25px;
+      border-radius: 15px;
+      border: 2px solid #223752;
+      box-shadow: inset 0 4px 20px rgba(0,0,0,0.4);
     }
+
     #current-question {
-      font-size: 1.5em;
-      margin-bottom: 10px;
-      min-height: 40px;
-      line-height: 1.5;
-    }
-    /* Indicador dinámico exterior de lo que se solicita */
-    #target-instruction {
-      font-size: 1.3em;
-      font-weight: bold;
-      color: #f1c40f;
-      background: #0d1b2a;
-      padding: 6px 15px;
-      border-radius: 5px;
-      display: inline-block;
+      font-size: 1.6em;
       margin-bottom: 15px;
-      border: 1px dashed #f39c12;
+      min-height: 45px;
+      line-height: 1.5;
+      color: #ffffff;
+      text-shadow: 1px 1px 3px #000;
     }
+
+    #target-instruction {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ffb703;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 8px 20px;
+      border-radius: 30px;
+      display: inline-block;
+      margin-bottom: 20px;
+      border: 1px dashed #ffb703;
+      letter-spacing: 0.5px;
+    }
+
     #answer-input {
-      padding: 10px;
-      font-size: 1.3em;
-      width: 250px;
+      padding: 12px;
+      font-size: 1.4em;
+      width: 260px;
       text-align: center;
-      border-radius: 5px;
-      border: none;
+      border-radius: 8px;
+      border: 2px solid #26d0ce;
+      background: #030811;
+      color: #fff;
       outline: none;
     }
-    /* Ajuste para que las imágenes panorámicas no se recorten */
+
+    /* Soporte de Imágenes Ajustadas (Sin cortes) */
     .screen-img {
       width: 100%;
-      max-width: 700px;
+      max-width: 650px;
       height: auto;
       object-fit: contain;
-      border-radius: 10px;
+      border-radius: 15px;
       margin: 15px auto;
-      border: 2px solid #ff4d6d;
+      border: 3px solid #26d0ce;
       display: block;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.6);
     }
-    /* Botones */
+
+    /* Botones Estilizados de Combate */
     button {
-      padding: 12px 25px;
+      padding: 12px 28px;
       font-size: 1.1em;
       font-weight: bold;
       cursor: pointer;
       border: none;
-      border-radius: 5px;
-      transition: background 0.2s, transform 0.1s;
+      border-radius: 8px;
+      transition: all 0.2s ease;
       margin: 5px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     }
-    button:active { transform: scale(0.98); }
-    .btn-main { background-color: #ff4d6d; color: white; }
-    .btn-main:hover { background-color: #ff758f; }
-    .btn-pass { background-color: #f39c12; color: white; }
-    .btn-pass:hover { background-color: #f1c40f; }
-    .btn-action { background-color: #27ae60; color: white; }
-    .btn-action:hover { background-color: #2ecc71; }
+    button:active { transform: scale(0.96); box-shadow: 0 2px 3px rgba(0,0,0,0.5); }
+    
+    .btn-main { background: linear-gradient(135deg, #00b4d8, #0077b6); color: white; }
+    .btn-main:hover { background: linear-gradient(135deg, #90e0ef, #00b4d8); color: #03045e; }
+    
+    .btn-pass { background: linear-gradient(135deg, #d90429, #ef233c); color: white; }
+    .btn-pass:hover { background: linear-gradient(135deg, #ff4d6d, #d90429); }
+    
+    .btn-action { background: linear-gradient(135deg, #38b000, #007200); color: white; }
+    .btn-action:hover { background: linear-gradient(135deg, #70e000, #38b000); }
 
     #feedback {
-      height: 25px;
-      font-size: 1.2em;
+      height: 30px;
+      font-size: 1.25em;
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 15px;
     }
-    /* Pantalla de Resultados */
+
+    /* Pantalla de Resultados Finales */
     .results-table {
-      width: 80%;
-      margin: 20px auto;
+      width: 85%;
+      margin: 25px auto;
       border-collapse: collapse;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      overflow: hidden;
     }
     .results-table th, .results-table td {
-      border: 1px solid #ff4d6d;
-      padding: 12px;
+      border: 1px solid #2d4a68;
+      padding: 14px;
       font-size: 1.2em;
     }
-    .results-table th { background-color: #415a77; }
+    .results-table th { background-color: #162c46; color: #26d0ce; }
+    
     #winner-announcement {
-      font-size: 2em;
-      color: #27ae60;
-      margin: 20px 0;
+      font-size: 2.2em;
+      color: #70e000;
+      margin: 25px 0;
       font-weight: bold;
+      text-shadow: 0 0 15px rgba(112,224,0,0.4);
     }
   </style>
 </head>
 <body>
 
-  <h1>Godzilla vs. King Kong: Rosco de Ecuaciones de 2º Grado</h1>
+  <h1>Godzilla vs. King Kong: El Desafío de las Ecuaciones de 2º Grado</h1>
 
   <div id="screen-setup" class="screen active-screen">
-    <h2>Configuración de la Batalla de Titanes</h2>
+    <h2>Preparar la Batalla en la Arena</h2>
     <img class="screen-img" src="./resources/imagen_inicial.png" alt="Godzilla y King Kong listos para el duelo matemático">
     
     <div class="instructions-box">
-      <h3>Instrucciones de Juego</h3>
+      <h3>Manual de Supervivencia de los Titanes</h3>
       <ul>
-        <li><strong>El Objetivo:</strong> Resolver correctamente las 20 ecuaciones de segundo grado de tu rosco. ¡Todas poseen soluciones enteras!</li>
-        <li><strong>Cómo responder:</strong> Presta mucha atención al indicador amarillo. Te pedirá explícitamente introducir **la mayor** o **la menor** de las dos soluciones de la ecuación.</li>
-        <li><strong>Mecánica de Turnos:</strong> Sigues respondiendo mientras aciertes. Si fallas o pulsas <strong>"Pasapalabra"</strong>, el turno pasará al titán rival. Puedes usar la tecla <em>Enter</em> para enviar.</li>
-        <li><strong>Modos de Tiempo:</strong> Elige entre un cronómetro global compartido o cronómetros individuales por equipo.</li>
+        <li><strong>El Objetivo:</strong> Resolver de forma cooperativa las 20 ecuaciones de segundo grado de tu rosco ecológico. ¡Todas las soluciones son números enteros!</li>
+        <li><strong>Cálculo Crítico:</strong> Presta atención exclusiva al indicador dorado. Te ordenará introducir **la mayor** o **la menor** de las dos raíces resultantes de la ecuación.</li>
+        <li><strong>Flujo del Turno:</strong> Mientras tu bando acierte, retienes el control del ecosistema. Si fallas o usas <strong>"Pasapalabra"</strong>, cederás la energía y el turno al titán oponente.</li>
+        <li><strong>Gestión de Tiempo:</strong> Sincroniza la batalla configurando un reloj global unificado o cronómetros individuales por hábitat.</li>
       </ul>
     </div>
 
     <div class="setup-container">
-      <div class="player-setup">
-        <h3>Titán 1</h3>
+      <div class="player-setup godzilla-theme">
+        <h3>Fuerzas del Pacífico</h3>
         <input type="text" id="p1-name" value="Equipo Godzilla">
       </div>
-      <div class="player-setup">
-        <h3>Titán 2</h3>
+      <div class="player-setup kong-theme">
+        <h3>Fuerzas de la Jungla</h3>
         <input type="text" id="p2-name" value="Equipo King Kong">
       </div>
     </div>
 
-    <div style="margin: 20px 0; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+    <div style="margin: 25px 0; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
       <div>
-        <label for="game-mode" style="font-size: 1.2em; font-weight: bold; display: block; margin-bottom: 5px;">Modalidad de Tiempo:</label>
+        <label for="game-mode" style="font-size: 1.1em; font-weight: bold; display: block; margin-bottom: 8px;">Sistema de Tiempo:</label>
         <select id="game-mode">
           <option value="shared">Tiempo Compartido (Global)</option>
-          <option value="individual">Tiempo Individual (Por Equipo)</option>
+          <option value="individual">Tiempo Individual (Por Hábitat)</option>
         </select>
       </div>
       <div>
-        <label for="game-duration" style="font-size: 1.2em; font-weight: bold; display: block; margin-bottom: 5px;">Duración:</label>
+        <label for="game-duration" style="font-size: 1.1em; font-weight: bold; display: block; margin-bottom: 8px;">Duración Máxima:</label>
         <select id="game-duration">
           <option value="5">5 Minutos</option>
           <option value="10">10 Minutos</option>
@@ -298,13 +391,11 @@
       </div>
     </div>
 
-    <button class="btn-main" style="font-size: 1.4em; padding: 15px 40px;" onclick="initGame()">Comenzar el Choque</button>
+    <button class="btn-main" style="font-size: 1.3em; padding: 16px 45px;" onclick="initGame()">Desatar el Choque de Titanes</button>
 
-    <hr>
-    <p>Autor Original: Joaquín Candañedo. Adaptación: Ecuaciones de Cardano-Vieta y Selección de Raíz Mín/Máx.<br><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="./resources/CC_BY_SA.png" alt="Creative Commons Reconocimiento - Compartir Igual"></a></p>  
-
+    <hr style="border: 0; border-top: 1px solid #2d4a68; margin-top: 30px;">
+    <p style="font-size: 0.9em; color: #778da9;">Autor Original: Joaquín Candañedo. Adaptación Temática: Ecuaciones de Cardano-Vieta y Filtro Mín/Máx.<br><a href="https://creativecommons.org/licenses/by-sa/4.0/"><img src="./resources/CC_BY_SA.png" alt="Creative Commons" style="margin-top: 5px;"></a></p>  
   </div>
-
 
   <div id="screen-game" class="screen">
     <div id="global-timer-container">
@@ -334,17 +425,17 @@
     </div>
 
     <div class="control-panel">
-      <h2 id="turn-indicator" style="color: #f39c12;">Turno de: ...</h2>
-      <div id="current-question">La ecuación aparecerá aquí</div>
+      <h2 id="turn-indicator" style="color: #ffb703; margin-top: 0;">Turno de: ...</h2>
+      <div id="current-question">Cargando desafío algebraico...</div>
       
       <div>
-        <div id="target-instruction">Cargando requerimiento...</div>
+        <div id="target-instruction">Procesando condición de raíz...</div>
       </div>
       
       <div id="action-zone">
-        <input type="text" id="answer-input" autocomplete="off" placeholder="Escribe el número entero">
-        <div style="margin-top: 15px;">
-          <button class="btn-action" id="btn-submit" onclick="processAnswer()">Responder</button>
+        <input type="text" id="answer-input" autocomplete="off" placeholder="Número entero esperado">
+        <div style="margin-top: 20px;">
+          <button class="btn-action" id="btn-submit" onclick="processAnswer()">Enviar Respuesta</button>
           <button class="btn-pass" id="btn-pass" onclick="triggerPasapalabra()">Pasapalabra</button>
         </div>
       </div>
@@ -352,40 +443,39 @@
     </div>
   </div>
 
-
   <div id="screen-results" class="screen">
-    <h2>Fin del Enfrentamiento</h2>
+    <h2>Fin del Conflicto Territorial</h2>
     <img class="screen-img" src="./resources/imagen_final.png" alt="Fin de la batalla">
     
-    <div id="winner-announcement">¡Ganador!</div>
+    <div id="winner-announcement">¡Cálculo Terminado!</div>
 
-    <h3>Estadísticas Finales</h3>
+    <h3>Métricas de Dominio de la Arena</h3>
     <table class="results-table">
       <thead>
         <tr>
-          <th>Titán / Concursante</th>
+          <th>Titán / Facción de Aula</th>
           <th>Aciertos 👍</th>
           <th>Errores 👎</th>
-          <th>Pendientes ⏳</th>
+          <th>Ecuaciones Pendientes ⏳</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td id="res-name-p1">Equipo Godzilla</td>
-          <td id="res-ok-p1" style="color: #27ae60;">0</td>
-          <td id="res-ko-p1" style="color: #c0392b;">0</td>
-          <td id="res-pen-p1" style="color: #f39c12;">0</td>
+          <td id="res-ok-p1" style="color: #55a630; font-weight: bold;">0</td>
+          <td id="res-ko-p1" style="color: #ff4d6d; font-weight: bold;">0</td>
+          <td id="res-pen-p1" style="color: #ffb703; font-weight: bold;">0</td>
         </tr>
         <tr>
           <td id="res-name-p2">Equipo King Kong</td>
-          <td id="res-ok-p2" style="color: #27ae60;">0</td>
-          <td id="res-ko-p2" style="color: #c0392b;">0</td>
-          <td id="res-pen-p2" style="color: #f39c12;">0</td>
+          <td id="res-ok-p2" style="color: #55a630; font-weight: bold;">0</td>
+          <td id="res-ko-p2" style="color: #ff4d6d; font-weight: bold;">0</td>
+          <td id="res-pen-p2" style="color: #ffb703; font-weight: bold;">0</td>
         </tr>
       </tbody>
     </table>
 
-    <button class="btn-main" style="margin-top: 20px; font-size: 1.2em;" onclick="restartToSetup()">Volver a Luchar</button>
+    <button class="btn-main" style="margin-top: 25px; font-size: 1.2em;" onclick="restartToSetup()">Reiniciar Ecosistema</button>
   </div>
 
   <script>
@@ -408,11 +498,10 @@
       });
     };
 
-    // Motor de generación usando Cardano-Vieta con discriminación de objetivo (mayor o menor)
     function generateCardanoVietaQuestion(existingEquations) {
       let attempts = 0;
       while (attempts < 1000) {
-        let x1 = Math.floor(Math.random() * 21) - 10; // Rango -10 a 10
+        let x1 = Math.floor(Math.random() * 21) - 10; 
         let x2 = Math.floor(Math.random() * 21) - 10;
         
         if (x1 === 0) x1 = 2;
@@ -441,7 +530,6 @@
         if (!existingEquations.includes(questionText)) {
           existingEquations.push(questionText);
           
-          // Determinamos de forma aleatoria cuál de las dos raíces se va a exigir obligatoriamente
           let requireMax = Math.random() < 0.5; 
           let correctValue = requireMax ? Math.max(x1, x2) : Math.min(x1, x2);
 
@@ -529,8 +617,8 @@
         const div = document.createElement("div");
         div.className = "letter waiting-letter";
         div.innerText = `${i + 1}ª`;
-        div.style.left = `${x - 20}px`;
-        div.style.top = `${y - 20}px`;
+        div.style.left = `${x - 21}px`;
+        div.style.top = `${y - 21}px`;
         div.id = `node-${playerKey}-${i + 1}`;
         container.appendChild(div);
       }
@@ -576,10 +664,7 @@
 
       let currentQuestionObj = pData.questions[currentNum - 1];
       
-      // Renderizar ecuación
-      document.getElementById("current-question").innerHTML = `Ecuación nº ${currentNum}:<br><strong style="font-size:1.4em;">${currentQuestionObj.text}</strong>`;
-      
-      // NUEVO: Modificar el contenedor de texto exterior con la instrucción específica
+      document.getElementById("current-question").innerHTML = `Ecuación nº ${currentNum}:<br><strong style="font-size:1.5em; color: #fff;">${currentQuestionObj.text}</strong>`;
       document.getElementById("target-instruction").innerText = `Introduce obligatoriamente ${currentQuestionObj.targetType} solución`;
 
       document.getElementById("answer-input").value = "";
@@ -626,7 +711,6 @@
       let questionObj = pData.questions[currentNum - 1];
       let targetNode = document.getElementById(`node-${activePlayerKey}-${currentNum}`);
 
-      // Validación estricta del objetivo (Mayor o menor valor esperado)
       if (!isNaN(numericAnswer) && numericAnswer === questionObj.targetAnswer) {
         targetNode.className = "letter correct-letter";
         pData.score.correct++;
@@ -644,7 +728,7 @@
         
         let r1 = questionObj.allAnswers[0];
         let r2 = questionObj.allAnswers[1];
-        document.getElementById("feedback").innerText = `Incorrecto. Las raíces son ${r1} y ${r2}. Se pedía ${questionObj.targetType} (${questionObj.targetAnswer}).`;
+        document.getElementById("feedback").innerHTML = `<span style="color: #ff4d6d;">⚠️ Incorrecto. Raíces: {${r1}, ${r2}}. Se pedía ${questionObj.targetType} (${questionObj.targetAnswer}).</span>`;
         
         pData.pending.splice(pData.currentIdx, 1);
         if (pData.pending.length === 0) {
@@ -668,7 +752,7 @@
             activePlayerKey = opponentKey;
           }
           refreshTurn();
-        }, 3000); // 3 segundos para asimilar la corrección analítica de raíces
+        }, 3000); 
       }
     }
 
@@ -732,16 +816,16 @@
         winnerText = `🏆 ¡Victoria Aplastante para ${players.p2.name} por completar el Rosco Perfecto! 🦍`;
       } else {
         if (players.p1.score.correct > players.p2.score.correct) {
-          winnerText = `🏆 ¡El Rey de los Monstruos es ${players.p1.name}! 🦖`;
+          winnerText = `🏆 ¡El Rey del Océano es ${players.p1.name}! 🦖`;
         } else if (players.p2.score.correct > players.p1.score.correct) {
-          winnerText = `🏆 ¡El Alfa de la Isla es ${players.p2.name}! 🦍`;
+          winnerText = `🏆 ¡El Alfa de la Jungla es ${players.p2.name}! 🦍`;
         } else {
           if (players.p1.score.wrong < players.p2.score.wrong) {
-            winnerText = `🏆 ¡Victoria para ${players.p1.name} (por mayor precisión en cálculo)! 🦖`;
+            winnerText = `🏆 ¡Victoria para ${players.p1.name} (por mayor precisión de cálculo)! 🦖`;
           } else if (players.p2.score.wrong < players.p1.score.wrong) {
-            winnerText = `🏆 ¡Victoria para ${players.p2.name} (por mayor precisión en cálculo)! 🦍`;
+            winnerText = `🏆 ¡Victoria para ${players.p2.name} (por mayor precisión de cálculo)! 🦍`;
           } else {
-            winnerText = "¡Empate en la cumbre! Ambos Titanes colapsan el marcador. 🤝";
+            winnerText = "¡Empate territorial! Ambos Titanes colapsan el marcador. 🤝";
           }
         }
       }
